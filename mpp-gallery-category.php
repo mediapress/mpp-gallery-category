@@ -15,7 +15,7 @@
  * This plugin is an alias for mpp-gallery-categories it enable user to select only one category at the time of creation or edit gallery detail page.
  */
 
-// exit if file access directly
+// Exit if file access directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -98,7 +98,7 @@ class MPP_Gallery_Categories_Helper {
 			'rewrite'           => array( 'slug' => $this->get_taxonomy_slug() ),
 		);
 
-		register_taxonomy( $this->get_taxonomy(),  mpp_get_gallery_post_type(), $args );
+		register_taxonomy( $this->get_taxonomy(), mpp_get_gallery_post_type(), $args );
 	}
 
 	/**
@@ -123,7 +123,7 @@ class MPP_Gallery_Categories_Helper {
 	 * Add interface to apply category to the gallery
 	 */
 	public function add_interface() {
-	    $gallery_id = mpp_is_gallery_create() ? false : mpp_get_current_gallery_id();
+		$gallery_id = mpp_is_gallery_create() ? false : mpp_get_current_gallery_id();
 
 		$args = array(
 			'taxonomy'   => $this->get_taxonomy(),
@@ -135,7 +135,7 @@ class MPP_Gallery_Categories_Helper {
 			$args['selected'] = $this->get_gallery_category( $gallery_id );
 		}
 
-		echo '<div class="mpp-u mpp-gallery-categories"><label>'.__( 'Choose Category', 'mpp_gallery_categories' ).'</label>';
+		echo '<div class="mpp-u mpp-gallery-categories"><label>' . __( 'Choose Category', 'mpp_gallery_categories' ) . '</label>';
 		wp_dropdown_categories( $args );
 		echo '</div>';
 	}
@@ -157,6 +157,11 @@ class MPP_Gallery_Categories_Helper {
 	 * @param int $gallery_id Gallery id.
 	 */
 	public function save_gallery_category( $gallery_id ) {
+
+		if ( ! isset( $_POST['gallery_category'] ) ) {
+			return;
+		}
+
 		$term = absint( $_POST['gallery_category'] );
 
 		if ( empty( $term ) ) {
@@ -169,7 +174,7 @@ class MPP_Gallery_Categories_Helper {
 	/**
 	 * Add category filter to gallery listing directory.
 	 */
-	public function add_category_filter(){
+	public function add_category_filter() {
 		$args = array(
 			'hide_empty' => 0,
 			'fields'     => 'id=>name',
@@ -180,13 +185,13 @@ class MPP_Gallery_Categories_Helper {
 
 		?>
 		<?php if ( ! empty( $terms ) ) : ?>
-			<optgroup label="<?php _e( 'By Category', 'mpp-gallery-category' ) ?>">
+            <optgroup label="<?php _e( 'By Category', 'mpp-gallery-category' ) ?>">
 				<?php foreach ( ( array ) $terms as $id => $name ) : ?>
-					<option value="mpp-gallery-category-<?php echo $id?>">
+                    <option value="mpp-gallery-category-<?php echo $id ?>">
 						<?php echo $name; ?>
-					</option>
-				<?php endforeach;?>
-			</optgroup>
+                    </option>
+				<?php endforeach; ?>
+            </optgroup>
 		<?php endif; ?>
 		<?php
 	}
@@ -211,18 +216,20 @@ class MPP_Gallery_Categories_Helper {
 		mediapress()->is_directory = true;
 
 		// Get all public galleries, should we do type filtering.
-		mediapress()->the_gallery_query = new MPP_Gallery_Query( array(
-			'status'       => 'public',
-			'page'         => $page,
-			'search_terms' => $search_terms,
-			'tax_query'    => array(
-				array(
-					'taxonomy' => $this->get_taxonomy(),
-					'field'    => 'term_id',
-					'terms'    => $cat_id,
+		mediapress()->the_gallery_query = new MPP_Gallery_Query(
+			array(
+				'status'       => 'public',
+				'page'         => $page,
+				'search_terms' => $search_terms,
+				'tax_query'    => array(
+					array(
+						'taxonomy' => $this->get_taxonomy(),
+						'field'    => 'term_id',
+						'terms'    => $cat_id,
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		mpp_get_template( 'gallery/loop-gallery.php' );
 
@@ -230,10 +237,15 @@ class MPP_Gallery_Categories_Helper {
 	}
 }
 
-mpp_gallery_categories();
-
+/**
+ * Class instance
+ *
+ * @return MPP_Gallery_Categories_Helper
+ */
 function mpp_gallery_categories() {
 	return MPP_Gallery_Categories_Helper::get_instance();
 }
+
+mpp_gallery_categories();
 
 
